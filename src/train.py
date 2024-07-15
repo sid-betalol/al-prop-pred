@@ -7,11 +7,12 @@ from torch_geometric.loader import DataLoader
 from torch_geometric.transforms import RandomNodeSplit
 from tqdm import tqdm
 import os
-import numpy as np
 
 from models.painn_model import FinalModel as PaiNN
 from entalpic_al import HOME, TARGET
-
+from pretrained_model import load_pretrained_model, predict_with_pretrained
+from utils import set_seed, count_parameters, save_checkpoint, split_dataset
+    
 def train(model, loader, optimizer, device):
     model.train()
     total_loss = 0
@@ -35,32 +36,6 @@ def test(model, loader, device):
         total_mae += (out - data.y.squeeze()).abs().sum().item()
     return total_mae / len(loader.dataset)
 
-def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-def save_checkpoint(state, is_best, filename='checkpoint.pth'):
-    torch.save(state, filename)
-    if is_best:
-        best_filename = 'best_model.pth'
-        torch.save(state, best_filename)
-        
-def split_dataset(dataset, train_ratio=0.8, val_ratio=0.1):
-    num_graphs = len(dataset)
-    indices = np.random.permutation(num_graphs)
-    
-    train_size = int(num_graphs * train_ratio)
-    val_size = int(num_graphs * val_ratio)
-    
-    train_indices = indices[:train_size]
-    val_indices = indices[train_size:train_size + val_size]
-    test_indices = indices[train_size + val_size:]
-    
-    train_dataset = dataset[train_indices]
-    val_dataset = dataset[val_indices]
-    test_dataset = dataset[test_indices]
-    
-    return train_dataset, val_dataset, test_dataset
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=int, default=10)
@@ -69,13 +44,27 @@ def main():
     parser.add_argument('--weight_decay', type=float, default=0.01)
     parser.add_argument('--resume', default='', type=str, metavar='PATH',
                         help='path to latest checkpoint (default: none)')
+    parser.add_argument('--use_pretrained_labels', action="store_true", help='Use labels from a pre-trained model instead of actual labels')
+    parser.add_argument('--seed', type=int, default=42, help='Random seed')
     args = parser.parse_args()
+    set_seed(args.seed)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     dataset = QM9(HOME)
-    data_set = dataset[-1000:]
-    data_set.data.y = data_set.data.y[:, [TARGET]]
+    idx = torch.tensor([0, 1, 2, 3, 4, 5, 6, 12, 13, 14, 15, 11])
+    dataset.data.y = dataset.data.y[:, idx]
+    data_set = dataset[-1000:].copy()
+    if args.use_pretrained_labels:
+        print("Using labels from pre-trained model")
+        pretrained_model = load_pretrained_model(dataset)
+        pretrained_model.to(device)
+        data_loader = DataLoader(data_set, batch_size= args.batch_size)
+        pretrained_labels = predict_with_pretrained(pretrained_model, data_loader, device)
+        data_set.data.y = pretrained_labels.unsqueeze(1)
+    else:
+        print("Using actual labels")
+        data_set.data.y = data_set.data.y[:, [TARGET]]
     print(f"Target Range: {data_set.data.y.min().item()} to {data_set.data.y.max().item()}")
 
     train_dataset, val_dataset, test_dataset = split_dataset(data_set)
