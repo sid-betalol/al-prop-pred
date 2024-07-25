@@ -14,4 +14,5 @@ def predict_with_pretrained(model, loader, device):
         with torch.no_grad():
             pred = model(data.z, data.pos, data.batch)
         preds.append(pred.view(-1))
-    return torch.cat(preds)
+    preds_tensor = torch.cat(preds)
+    return preds_tensor

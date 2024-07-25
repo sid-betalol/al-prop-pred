@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch_scatter import scatter
 from torch_geometric.nn import MessagePassing, radius_graph
+from torch.nn import Dropout
 
 def _merge(s, v):
     v = torch.reshape(v, v.shape[:-2] + (3*v.shape[-2],))
@@ -140,8 +141,19 @@ class Update(nn.Module):
         
         return s, v
     
+class VectorDropout(nn.Module):
+    def __init__(self, p: float = 0.5):
+        super(VectorDropout, self).__init__()
+        self.p = p
+
+    def forward(self, x):
+        if not self.training or self.p == 0:
+            return x
+        mask = torch.bernoulli(torch.full((x.size(0), x.size(1), 1), 1 - self.p)).to(x.device) / (1 - self.p)
+        return x * mask
+    
 class FinalModel(nn.Module):
-    def __init__(self, hc = 128, num_layers = 4, num_rbf = 20, cutoff = 5.0):
+    def __init__(self, hc = 128, num_layers = 4, num_rbf = 20, cutoff = 5.0, dropout_rate=0.1):
         super(FinalModel, self).__init__()
         self.hc = hc
         self.num_layers = num_layers
@@ -151,10 +163,13 @@ class FinalModel(nn.Module):
         self.embed = nn.Embedding(118, hc)
         self.message_layers = nn.ModuleList([Message(hc, num_rbf, cutoff) for _ in range(num_layers)])
         self.update_layers = nn.ModuleList([Update(hc) for _ in range(num_layers)])
+        self.scalar_dropout = Dropout(p=dropout_rate)
+        self.vector_dropout = VectorDropout(p=dropout_rate)
         
         self.out = nn.Sequential(
             nn.Linear(hc, hc),
             nn.SiLU(),
+            Dropout(p=dropout_rate),
             nn.Linear(hc, 1)
         )
         
@@ -168,6 +183,13 @@ class FinalModel(nn.Module):
         for message, update in zip(self.message_layers, self.update_layers):
             s, v = message(s, v, edge_index, edge_attr)
             s, v = update(s, v)
+            s = self.scalar_dropout(s)
+            v = self.vector_dropout(v)
             
         s = scatter(s, batch, dim = 0, reduce = 'sum')
         return self.out(s).squeeze(-1)
+    
+    def enable_dropout(self):
+        for m in self.modules():
+            if isinstance(m, (nn.Dropout, VectorDropout)):
+                m.train()

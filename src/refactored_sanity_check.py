@@ -67,6 +67,10 @@ def eval_model(model: DimeNetPlusPlus, loader:DataLoader, num_batches:int, devic
         data = data.to(device)
         with torch.no_grad():
             pred = model(data.z, data.pos, data.batch)
+        # print("Pred shape: ", pred.shape)
+        # print("Pred view shape: ", pred.view(-1).shape)
+        # print("Data y shape: ", data.y.shape)
+        # print("Data y TARGET shape: ", data.y[:, TARGET].shape)
         mae = (pred.view(-1) - data.y[:, TARGET]).abs()
         mae_list.append(mae)
     return torch.cat(mae_list, dim=0).mean().item()

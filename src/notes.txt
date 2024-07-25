@@ -1,0 +1,39 @@
+In refactored_sanity_check
+
+Pred shape:  torch.Size([32, 1])
+Pred view shape:  torch.Size([32])
+Data y shape:  torch.Size([32, 12])
+Data y TARGET shape:  torch.Size([32])
+
+
+For plain train with actual labels
+PaiNN s shape:  torch.Size([32, 128])
+PaiNN self out s shape:  torch.Size([32, 1])
+PaiNN slef out s squeeze shape:  torch.Size([32])
+Plain train out shape:  torch.Size([32])
+Plain train data y shape:  torch.Size([32, 1])
+Plain train data y squeeze shape:  torch.Size([32])
+PaiNN s shape:  torch.Size([32, 128])
+PaiNN self out s shape:  torch.Size([32, 1])
+PaiNN slef out s squeeze shape:  torch.Size([32])
+Plain test out shape:  torch.Size([32])
+Plain test data y shape:  torch.Size([32, 1])
+Plain test data y squeeze shape:  torch.Size([32])
+
+For AL with pretrained labels
+AL Loop full data y shape:  torch.Size([10000, 1])
+Predict with pretrained pred shape:  torch.Size([32, 1])
+Predict with pretrained pred view shape:  torch.Size([32])
+Predict with pretrained pred shape:  torch.Size([32, 1])
+PaiNN s shape:  torch.Size([32, 128])
+PaiNN self out s shape:  torch.Size([32, 1])
+PaiNN slef out s squeeze shape:  torch.Size([32])
+AL Train out shape:  torch.Size([32])
+AL Train y shape:  torch.Size([32])
+AL Train y squeeze shape:  torch.Size([32])
+PaiNN s shape:  torch.Size([32, 128])
+PaiNN self out s shape:  torch.Size([32, 1])
+PaiNN slef out s squeeze shape:  torch.Size([32])
+AL Test out shape:  torch.Size([32])
+AL Test y shape:  torch.Size([32])
+AL Test y squeeze shape:  torch.Size([32])

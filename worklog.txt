@@ -1,0 +1,26 @@
+Sunday 14/07
+11:00 to 2:00 - Read Hitchhiker's Guide to GNNs, revisit thesis code for ideas.
+15:20 - Created GitHub Repo
+15:20 to 16:05 - Read the problem statement. Created a rough plan. Read PaiNN and DimeNet paper. 
+                 **PaiNN similar to GVP-GNN.
+                 **Look at https://github.com/lucidrains/alphafold3-pytorch. References have some useful papers.                 
+16:05 to 16:20 - Ran sanity_check.py and refactored it. 
+``Powercut``
+17:45 to 18:00 - Added comments and docstrings to refactored_sanity_check.py
+``Powercut``
+Used some time during the power cut to look at the PaiNN paper in detail. 
+Looked at some associated repos with implementation such as https://github.com/learningmatter-mit/NeuralForceField,
+https://github.com/atomistic-machine-learning/schnetpack, and https://github.com/pyg-team/pytorch_geometric/blob/master/torch_geometric/nn/models/dimenet.py
+
+Monday 15/07
+00:05 to 02:15 - Script for PaiNN model, train script, ~30 minutes debugging. Ran for 35 epochs. Loss down and down. GG. 
+02:15 to 03:55 - Active learning papers (https://www.gettoby.com/p/9vhw400dm3r9) and started writing code.
+''Powercut''
+18:00 to 18:27 - More AL code
+''Powercut''
+
+
+Read about modAL: https://modal-python.readthedocs.io/en/latest/index.html
+https://alectio.com/2022/12/20/active-learning-101-tricks-for-tuning-your-active-learning/#:~:text=Active%20Learning%20is%20all%20about,previous%20state%20of%20the%20model.
+
+If you are modifying the train and test functions for compatibility with active_learning, make sure the old code works with this too (without active learning, when we were not providing any labels)
