@@ -2,8 +2,6 @@
 
 This project implements various machine learning approaches for predicting molecular properties, including plain training, active learning, and multi-fidelity active learning. The model is based on the PaiNN (Polarizable Atom Interaction Neural Network) architecture and is trained on the QM9 dataset.
 
-## System Requirements
-
 This project was developed and tested on:
 - Apple M2 CPU
 - Python 3.11
