@@ -10,10 +10,11 @@ import os
 
 from models.painn_model import FinalModel as PaiNN
 from entalpic_al import HOME, TARGET
-from pretrained_model import load_pretrained_model, predict_with_pretrained
+from pretrained_model import load_pretrained_model_dimenet, predict_with_pretrained
 from utils import train, test, set_seed, count_parameters, save_checkpoint, split_dataset, train_al, test_al
 # from active_learning import active_learning_loop
 from v2_active_learning import active_learning_loop
+from multi_fidelity_al import multi_fidelity_active_learning_loop
 
 def main():
     parser = argparse.ArgumentParser()
@@ -30,13 +31,18 @@ def main():
     parser.add_argument('--use_pretrained_labels', action="store_true", help='Use labels from a pre-trained model instead of actual labels')
     parser.add_argument('--resume', default='', type=str, metavar='PATH',
                         help='path to latest checkpoint (default: none)')
+    parser.add_argument('--use_multi_fidelity_al', action='store_true', help='Use multi-fidelity active learning loop')
     args = parser.parse_args()
 
     # device = torch.device('mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is_available() else 'cpu')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     set_seed(args.seed)
     if args.use_active_learning and args.al_iterations > 0:
-        if not args.use_al_true_labels:
+        if args.use_multi_fidelity_al:
+            model, mae_test = multi_fidelity_active_learning_loop(args, device)
+            print(f'Final Results:')
+            print(f'MAE on actual QM9 labels: {mae_test:.4f}')
+        elif not args.use_al_true_labels:
             model, mae_dimenet, mae_actual = active_learning_loop(args, device)
             print(f'Final Results:')
             print(f'MAE on DimeNet++ labels: {mae_dimenet:.4f}')
@@ -52,7 +58,7 @@ def main():
         dataset = full_dataset[-10000:].copy()
         if args.use_pretrained_labels:
             print("Using labels from pre-trained model")
-            pretrained_model = load_pretrained_model(QM9(HOME))
+            pretrained_model = load_pretrained_model_dimenet(QM9(HOME))
             pretrained_model.to(device)
             dataset._data.y = dataset._data.y[:, [TARGET]]
             data_loader = DataLoader(dataset, batch_size= args.batch_size)

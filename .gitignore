@@ -164,6 +164,8 @@ cython_debug/
 pretrained_dimenet_pp/
 processed/
 raw/
+pretrained_dimenet/
+trained_schnet_models/
 
 # Ignore large files and datasets
 *.pt

@@ -9,7 +9,7 @@ from torch.utils.data import Subset
 from tqdm import tqdm
 import torch.nn as nn
 from models.painn_model import FinalModel as PaiNN
-from pretrained_model import load_pretrained_model, predict_with_pretrained
+from pretrained_model import load_pretrained_model_dimenet, predict_with_pretrained
 from utils import set_seed, split_dataset
 from entalpic_al import HOME, TARGET
 from utils import train, test
@@ -90,7 +90,7 @@ def active_learning_loop(args, device):
     unlabeled_indices -= set(val_indices)
     
     if not args.use_al_true_labels:
-        pretrained_model = load_pretrained_model(QM9(HOME))
+        pretrained_model = load_pretrained_model_dimenet(QM9(HOME))
         pretrained_model.to(device)
         full_loader = DataLoader(full_dataset, batch_size=args.batch_size)
         all_labels = predict_with_pretrained(pretrained_model, full_loader, device)
