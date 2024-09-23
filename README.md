@@ -92,7 +92,7 @@ python train.py --help
 3. Gasteiger, Johannes, Janek Groß, and Stephan Günnemann. "Directional message passing for molecular graphs." arXiv preprint arXiv:2003.03123 (2020).
 4. Gasteiger, Johannes, Chandan Yeshwanth, and Stephan Günnemann. "Directional message passing on molecular graphs via synthetic coordinates." Advances in Neural Information Processing Systems 34 (2021): 15421-15433.
 5. Jing, Bowen, et al. "Learning from protein structure with geometric vector perceptrons." International Conference on Learning Representations. 2020.
-6. Jing, Bowen, et al. "Learning from protein structure with geometric vector perceptrons." International Conference on Learning Representations. 2020.
+6. Jing, Bowen, et al. "Equivariant graph neural networks for 3d macromolecular structure." arXiv preprint arXiv:2106.03843 (2021).
 7. [PyTorch DimeNet++ Documentation](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.models.DimeNetPlusPlus.html#torch_geometric.nn.models.DimeNetPlusPlus)
 8. https://github.com/lucidrains/alphafold3-pytorch
 9. https://github.com/learningmatter-mit/NeuralForceField
